@@ -236,7 +236,7 @@ QueryBuilder.prototype.setRules = function(data) {
                     that.setRuleValue(model, rule.value);
                 }
                 if (rule.description) {
-                    that.setRuleDescription(model, rule.value)
+                    that.setRuleDescription(model, rule.description)
                 }
 
             }

@@ -88,6 +88,7 @@ $ticks-position: 5px,
             }
         }
         .rule-description-container {
+            border-left: $rule-value-separator;
             padding-left: 50px;
             label {
                 margin-bottom: 0;
