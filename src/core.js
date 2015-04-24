@@ -19,8 +19,7 @@ QueryBuilder.prototype.init = function($el, options) {
     // "allow_groups" can be boolean or int
     if (this.settings.allow_groups === false) {
         this.settings.allow_groups = 0;
-    }
-    else if (this.settings.allow_groups === true) {
+    } else if (this.settings.allow_groups === true) {
         this.settings.allow_groups = -1;
     }
 
@@ -41,7 +40,7 @@ QueryBuilder.prototype.init = function($el, options) {
 
     // ensure we have a container id
     if (!this.$el.attr('id')) {
-        this.$el.attr('id', 'qb_'+Math.floor(Math.random()*99999));
+        this.$el.attr('id', 'qb_' + Math.floor(Math.random() * 99999));
         this.status.generated_id = true;
     }
     this.status.id = this.$el.attr('id');
@@ -58,8 +57,7 @@ QueryBuilder.prototype.init = function($el, options) {
     if (options.rules) {
         this.setRules(options.rules);
         delete this.settings.rules;
-    }
-    else {
+    } else {
         this.setRoot(true);
     }
 };
@@ -86,15 +84,13 @@ QueryBuilder.prototype.checkFilters = function() {
 
         if (!filter.type) {
             filter.type = 'string';
-        }
-        else if (!QueryBuilder.types[filter.type]) {
+        } else if (!QueryBuilder.types[filter.type]) {
             error('Invalid type "{0}"', filter.type);
         }
 
         if (!filter.input) {
             filter.input = 'text';
-        }
-        else if (typeof filter.input != 'function' && QueryBuilder.inputs.indexOf(filter.input) == -1) {
+        } else if (typeof filter.input != 'function' && QueryBuilder.inputs.indexOf(filter.input) == -1) {
             error('Invalid input "{0}"', filter.input);
         }
 
@@ -107,13 +103,13 @@ QueryBuilder.prototype.checkFilters = function() {
 
         if (!filter.optgroup) {
             filter.optgroup = null;
-        }
-        else {
+        } else {
             that.status.has_optgroup = true;
         }
 
         switch (filter.input) {
-            case 'radio': case 'checkbox':
+            case 'radio':
+            case 'checkbox':
                 if (!filter.values || filter.values.length < 1) {
                     error('Missing filter "{0}" values', filter.id);
                 }
@@ -134,12 +130,10 @@ QueryBuilder.prototype.checkFilters = function() {
 
                 if (idx == -1) {
                     idx = optgroups.length;
-                }
-                else {
+                } else {
                     idx++;
                 }
-            }
-            else {
+            } else {
                 idx = optgroups.length;
             }
 
@@ -213,9 +207,8 @@ QueryBuilder.prototype.bindEvents = function() {
 
             if (index === 0) {
                 node.$el.prependTo(node.parent.$el.find('>.rules-group-body>.rules-list'));
-            }
-            else {
-                node.$el.insertAfter(node.parent.rules[index-1].$el);
+            } else {
+                node.$el.insertAfter(node.parent.rules[index - 1].$el);
             }
         },
         'update': function(e, node, field, value, oldValue) {
@@ -316,9 +309,9 @@ QueryBuilder.prototype.deleteGroup = function(group) {
     var del = true;
 
     group.each('reverse', function(rule) {
-        del&= this.deleteRule(rule);
+        del &= this.deleteRule(rule);
     }, function(group) {
-        del&= this.deleteGroup(group);
+        del &= this.deleteGroup(group);
     }, this);
 
     if (del) {
@@ -417,8 +410,7 @@ QueryBuilder.prototype.createRuleOperators = function(rule, triggerChangeOperato
 
     if (triggerChangeOperator !== false) {
         rule.operator = operators[0];
-    }
-    else {
+    } else {
         rule.__.operator = operators[0];
     }
 
@@ -439,7 +431,7 @@ QueryBuilder.prototype.createRuleInput = function(rule) {
     var $inputs = $(),
         filter = rule.filter;
 
-    for (var i=0; i<rule.operator.nb_inputs; i++) {
+    for (var i = 0; i < rule.operator.nb_inputs; i++) {
         var $ruleInput = $(this.getRuleInput(rule, i));
         if (i > 0) $valueContainer.append(this.settings.inputs_separator);
         $valueContainer.append($ruleInput);
@@ -459,6 +451,40 @@ QueryBuilder.prototype.createRuleInput = function(rule) {
     }
 };
 
+
+/**
+ * Create the description for a rule
+ * @param rule {Rule}
+ */
+QueryBuilder.prototype.createRuleDescription = function(rule) {
+    var $descriptionContainer = rule.$el.find('.rule-description-container').empty();
+
+    if (!rule.filter || rule.operator.nb_inputs === 0) {
+        return;
+    }
+
+    var $inputs = $(),
+        filter = rule.filter;
+
+    for (var i = 0; i < rule.operator.nb_inputs; i++) {
+        var $ruleDescription = $(this.getRuleDescriptionInput(rule));
+        if (i > 0) $descriptionContainer.append(this.settings.inputs_separator);
+        $descriptionContainer.append($ruleDescription);
+        $inputs = $inputs.add($ruleDescription);
+    }
+
+    $descriptionContainer.show();
+
+    // if (filter.plugin) {
+    //     $inputs[filter.plugin](filter.plugin_config || {});
+    // }
+
+    this.setRuleDescription(rule, "");
+
+    this.trigger('afterCreateRuleDescription', rule);
+
+};
+
 /**
  * Perform action when rule's filter is changed
  * @param rule {Rule}
@@ -466,6 +492,7 @@ QueryBuilder.prototype.createRuleInput = function(rule) {
 QueryBuilder.prototype.updateRuleFilter = function(rule) {
     this.createRuleOperators(rule, false);
     this.createRuleInput(rule);
+    this.createRuleDescription(rule);
 
     rule.$el.find('.rule-filter-container [name$=_filter]').val(rule.filter ? rule.filter.id : '-1');
 
@@ -482,8 +509,7 @@ QueryBuilder.prototype.updateRuleOperator = function(rule, previousOperator) {
 
     if (!rule.operator || rule.operator.nb_inputs === 0) {
         $valueContainer.hide();
-    }
-    else {
+    } else {
         $valueContainer.show();
 
         if ($valueContainer.is(':empty') || rule.operator.nb_inputs !== previousOperator.nb_inputs) {
@@ -552,15 +578,14 @@ QueryBuilder.prototype.displayError = function(node) {
     if (this.settings.display_errors) {
         if (node.error === null) {
             node.$el.removeClass('has-error');
-        }
-        else {
+        } else {
             // translate the text without modifying event array
             var error = $.extend([], node.error, [
                 this.lang.errors[node.error[0]] || node.error[0]
             ]);
 
             node.$el.addClass('has-error')
-              .find('.error-container').eq(0).attr('title', fmt.apply(null, error));
+                .find('.error-container').eq(0).attr('title', fmt.apply(null, error));
         }
     }
 };

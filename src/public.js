@@ -138,15 +138,18 @@ QueryBuilder.prototype.getRules = function() {
             var value = null;
             if (model.operator.nb_inputs !== 0) {
                 value = that.getRuleValue(model);
+                description = that.getRuleDescription(model);
             }
-
+            var description = null;
+            description = that.getRuleDescription(model);
             var rule = {
                 id: model.filter.id,
                 field: model.filter.field,
                 type: model.filter.type,
                 input: model.filter.input,
                 operator: model.operator.type,
-                value: value
+                value: value,
+                description: description
             };
 
             if (model.filter.data || model.data) {
@@ -232,6 +235,10 @@ QueryBuilder.prototype.setRules = function(data) {
                 if (model.operator.nb_inputs !== 0 && rule.value !== undefined) {
                     that.setRuleValue(model, rule.value);
                 }
+                if (rule.description) {
+                    that.setRuleDescription(model, rule.value)
+                }
+
             }
         });
 

@@ -301,8 +301,7 @@ QueryBuilder.prototype.init = function($el, options) {
     // "allow_groups" can be boolean or int
     if (this.settings.allow_groups === false) {
         this.settings.allow_groups = 0;
-    }
-    else if (this.settings.allow_groups === true) {
+    } else if (this.settings.allow_groups === true) {
         this.settings.allow_groups = -1;
     }
 
@@ -323,7 +322,7 @@ QueryBuilder.prototype.init = function($el, options) {
 
     // ensure we have a container id
     if (!this.$el.attr('id')) {
-        this.$el.attr('id', 'qb_'+Math.floor(Math.random()*99999));
+        this.$el.attr('id', 'qb_' + Math.floor(Math.random() * 99999));
         this.status.generated_id = true;
     }
     this.status.id = this.$el.attr('id');
@@ -340,8 +339,7 @@ QueryBuilder.prototype.init = function($el, options) {
     if (options.rules) {
         this.setRules(options.rules);
         delete this.settings.rules;
-    }
-    else {
+    } else {
         this.setRoot(true);
     }
 };
@@ -368,15 +366,13 @@ QueryBuilder.prototype.checkFilters = function() {
 
         if (!filter.type) {
             filter.type = 'string';
-        }
-        else if (!QueryBuilder.types[filter.type]) {
+        } else if (!QueryBuilder.types[filter.type]) {
             error('Invalid type "{0}"', filter.type);
         }
 
         if (!filter.input) {
             filter.input = 'text';
-        }
-        else if (typeof filter.input != 'function' && QueryBuilder.inputs.indexOf(filter.input) == -1) {
+        } else if (typeof filter.input != 'function' && QueryBuilder.inputs.indexOf(filter.input) == -1) {
             error('Invalid input "{0}"', filter.input);
         }
 
@@ -389,13 +385,13 @@ QueryBuilder.prototype.checkFilters = function() {
 
         if (!filter.optgroup) {
             filter.optgroup = null;
-        }
-        else {
+        } else {
             that.status.has_optgroup = true;
         }
 
         switch (filter.input) {
-            case 'radio': case 'checkbox':
+            case 'radio':
+            case 'checkbox':
                 if (!filter.values || filter.values.length < 1) {
                     error('Missing filter "{0}" values', filter.id);
                 }
@@ -416,12 +412,10 @@ QueryBuilder.prototype.checkFilters = function() {
 
                 if (idx == -1) {
                     idx = optgroups.length;
-                }
-                else {
+                } else {
                     idx++;
                 }
-            }
-            else {
+            } else {
                 idx = optgroups.length;
             }
 
@@ -495,9 +489,8 @@ QueryBuilder.prototype.bindEvents = function() {
 
             if (index === 0) {
                 node.$el.prependTo(node.parent.$el.find('>.rules-group-body>.rules-list'));
-            }
-            else {
-                node.$el.insertAfter(node.parent.rules[index-1].$el);
+            } else {
+                node.$el.insertAfter(node.parent.rules[index - 1].$el);
             }
         },
         'update': function(e, node, field, value, oldValue) {
@@ -598,9 +591,9 @@ QueryBuilder.prototype.deleteGroup = function(group) {
     var del = true;
 
     group.each('reverse', function(rule) {
-        del&= this.deleteRule(rule);
+        del &= this.deleteRule(rule);
     }, function(group) {
-        del&= this.deleteGroup(group);
+        del &= this.deleteGroup(group);
     }, this);
 
     if (del) {
@@ -699,8 +692,7 @@ QueryBuilder.prototype.createRuleOperators = function(rule, triggerChangeOperato
 
     if (triggerChangeOperator !== false) {
         rule.operator = operators[0];
-    }
-    else {
+    } else {
         rule.__.operator = operators[0];
     }
 
@@ -721,7 +713,7 @@ QueryBuilder.prototype.createRuleInput = function(rule) {
     var $inputs = $(),
         filter = rule.filter;
 
-    for (var i=0; i<rule.operator.nb_inputs; i++) {
+    for (var i = 0; i < rule.operator.nb_inputs; i++) {
         var $ruleInput = $(this.getRuleInput(rule, i));
         if (i > 0) $valueContainer.append(this.settings.inputs_separator);
         $valueContainer.append($ruleInput);
@@ -741,6 +733,40 @@ QueryBuilder.prototype.createRuleInput = function(rule) {
     }
 };
 
+
+/**
+ * Create the description for a rule
+ * @param rule {Rule}
+ */
+QueryBuilder.prototype.createRuleDescription = function(rule) {
+    var $descriptionContainer = rule.$el.find('.rule-description-container').empty();
+
+    if (!rule.filter || rule.operator.nb_inputs === 0) {
+        return;
+    }
+
+    var $inputs = $(),
+        filter = rule.filter;
+
+    for (var i = 0; i < rule.operator.nb_inputs; i++) {
+        var $ruleDescription = $(this.getRuleDescriptionInput(rule));
+        if (i > 0) $descriptionContainer.append(this.settings.inputs_separator);
+        $descriptionContainer.append($ruleDescription);
+        $inputs = $inputs.add($ruleDescription);
+    }
+
+    $descriptionContainer.show();
+
+    // if (filter.plugin) {
+    //     $inputs[filter.plugin](filter.plugin_config || {});
+    // }
+
+    this.setRuleDescription(rule, "");
+
+    this.trigger('afterCreateRuleDescription', rule);
+
+};
+
 /**
  * Perform action when rule's filter is changed
  * @param rule {Rule}
@@ -748,6 +774,7 @@ QueryBuilder.prototype.createRuleInput = function(rule) {
 QueryBuilder.prototype.updateRuleFilter = function(rule) {
     this.createRuleOperators(rule, false);
     this.createRuleInput(rule);
+    this.createRuleDescription(rule);
 
     rule.$el.find('.rule-filter-container [name$=_filter]').val(rule.filter ? rule.filter.id : '-1');
 
@@ -764,8 +791,7 @@ QueryBuilder.prototype.updateRuleOperator = function(rule, previousOperator) {
 
     if (!rule.operator || rule.operator.nb_inputs === 0) {
         $valueContainer.hide();
-    }
-    else {
+    } else {
         $valueContainer.show();
 
         if ($valueContainer.is(':empty') || rule.operator.nb_inputs !== previousOperator.nb_inputs) {
@@ -834,15 +860,14 @@ QueryBuilder.prototype.displayError = function(node) {
     if (this.settings.display_errors) {
         if (node.error === null) {
             node.$el.removeClass('has-error');
-        }
-        else {
+        } else {
             // translate the text without modifying event array
             var error = $.extend([], node.error, [
                 this.lang.errors[node.error[0]] || node.error[0]
             ]);
 
             node.$el.addClass('has-error')
-              .find('.error-container').eq(0).attr('title', fmt.apply(null, error));
+                .find('.error-container').eq(0).attr('title', fmt.apply(null, error));
         }
     }
 };
@@ -863,6 +888,7 @@ QueryBuilder.prototype.triggerValidationError = function(node, error, value) {
         node.error = error;
     }
 };
+
 
 /**
  * Destroy the plugin
@@ -1004,15 +1030,18 @@ QueryBuilder.prototype.getRules = function() {
             var value = null;
             if (model.operator.nb_inputs !== 0) {
                 value = that.getRuleValue(model);
+                description = that.getRuleDescription(model);
             }
-
+            var description = null;
+            description = that.getRuleDescription(model);
             var rule = {
                 id: model.filter.id,
                 field: model.filter.field,
                 type: model.filter.type,
                 input: model.filter.input,
                 operator: model.operator.type,
-                value: value
+                value: value,
+                description: description
             };
 
             if (model.filter.data || model.data) {
@@ -1098,11 +1127,16 @@ QueryBuilder.prototype.setRules = function(data) {
                 if (model.operator.nb_inputs !== 0 && rule.value !== undefined) {
                     that.setRuleValue(model, rule.value);
                 }
+                if (rule.description) {
+                    that.setRuleDescription(model, rule.value)
+                }
+
             }
         });
 
     }(data, this.model.root));
 };
+
 
 /**
  * Check if a value is correct for a filter
@@ -1502,6 +1536,34 @@ QueryBuilder.prototype.setRuleValue = function(rule, value) {
 };
 
 /**
+ * Returns rule description
+ * @param rule {Rule}
+ * @return {string}
+ */
+QueryBuilder.prototype.getRuleDescription = function(rule) {
+    var $description = rule.$el.find('.rule-description-container');
+    var name = rule.id + '_description';
+    var description = $description.find('[name='+ name +']').val();
+    return this.change('getRuleDescription', description, rule);
+};
+
+/**
+ * Sets the description of a rule.
+ * @param rule {Rule}
+ * @param description {string}
+ */
+QueryBuilder.prototype.setRuleDescription = function(rule, description) {
+
+    this.trigger('beforeSetRuleDescription', rule, description);
+
+    var $description = $('.rule-description-container');
+    var name = rule.id +'_description';
+    $description.find('[name='+ name +']').val(description).trigger('change');
+
+    this.trigger('afterSetRuleDescription', rule, description);
+};
+
+/**
  * Clean rule flags.
  * @param rule {object}
  * @return {object}
@@ -1525,6 +1587,8 @@ QueryBuilder.prototype.parseRuleFlags = function(rule) {
     return this.change('parseRuleFlags', flags, rule);
 };
 
+
+
 /**
  * Returns group HTML
  * @param group_id {string}
@@ -1533,29 +1597,26 @@ QueryBuilder.prototype.parseRuleFlags = function(rule) {
  */
 QueryBuilder.prototype.getGroupTemplate = function(group_id, level) {
     var h = '\
-<dl id="'+ group_id +'" class="rules-group-container"> \
+<dl id="' + group_id + '" class="rules-group-container"> \
   <dt class="rules-group-header"> \
     <div class="btn-group pull-right group-actions"> \
       <button type="button" class="btn btn-xs btn-success" data-add="rule"> \
-        <i class="' + this.icons.add_rule + '"></i> '+ this.lang.add_rule +' \
+        <i class="' + this.icons.add_rule + '"></i> ' + this.lang.add_rule + ' \
       </button> \
-      '+ (this.settings.allow_groups===-1 || this.settings.allow_groups>=level ?
+      ' + (this.settings.allow_groups === -1 || this.settings.allow_groups >= level ?
         '<button type="button" class="btn btn-xs btn-success" data-add="group"> \
-          <i class="' + this.icons.add_group + '"></i> '+ this.lang.add_group +' \
-        </button>'
-      :'') +' \
-      '+ (level>1 ?
+          <i class="' + this.icons.add_group + '"></i> ' + this.lang.add_group + ' \
+        </button>' : '') + ' \
+      ' + (level > 1 ?
         '<button type="button" class="btn btn-xs btn-danger" data-delete="group"> \
-          <i class="' + this.icons.remove_group + '"></i> '+ this.lang.delete_group +' \
-        </button>'
-      : '') +' \
+          <i class="' + this.icons.remove_group + '"></i> ' + this.lang.delete_group + ' \
+        </button>' : '') + ' \
     </div> \
     <div class="btn-group group-conditions"> \
-      '+ this.getGroupConditions(group_id, level) +' \
+      ' + this.getGroupConditions(group_id, level) + ' \
     </div> \
-    '+ (this.settings.display_errors ?
-      '<div class="error-container"><i class="' + this.icons.error + '"></i></div>'
-    :'') +'\
+    ' + (this.settings.display_errors ?
+        '<div class="error-container"><i class="' + this.icons.error + '"></i></div>' : '') + '\
   </dt> \
   <dd class=rules-group-body> \
     <ul class=rules-list></ul> \
@@ -1574,13 +1635,13 @@ QueryBuilder.prototype.getGroupTemplate = function(group_id, level) {
 QueryBuilder.prototype.getGroupConditions = function(group_id, level) {
     var h = '';
 
-    for (var i=0, l=this.settings.conditions.length; i<l; i++) {
+    for (var i = 0, l = this.settings.conditions.length; i < l; i++) {
         var cond = this.settings.conditions[i],
             label = this.lang.conditions[cond] || cond;
 
-        h+= '\
+        h += '\
         <label class="btn btn-xs btn-primary"> \
-          <input type="radio" name="'+ group_id +'_cond" value="'+ cond +'"> '+ label +' \
+          <input type="radio" name="' + group_id + '_cond" value="' + cond + '"> ' + label + ' \
         </label>';
     }
 
@@ -1594,21 +1655,20 @@ QueryBuilder.prototype.getGroupConditions = function(group_id, level) {
  */
 QueryBuilder.prototype.getRuleTemplate = function(rule_id) {
     var h = '\
-<li id="'+ rule_id +'" class="rule-container"> \
+<li id="' + rule_id + '" class="rule-container"> \
   <div class="rule-header"> \
   <div class="btn-group pull-right rule-actions"> \
     <button type="button" class="btn btn-xs btn-danger" data-delete="rule"> \
-      <i class="' + this.icons.remove_rule + '"></i> '+ this.lang.delete_rule +' \
+      <i class="' + this.icons.remove_rule + '"></i> ' + this.lang.delete_rule + ' \
     </button> \
   </div> \
   </div> \
-  '+ (this.settings.display_errors ?
-    '<div class="error-container"><i class="' + this.icons.error + '"></i></div>'
-  :'') +'\
+  ' + (this.settings.display_errors ?
+        '<div class="error-container"><i class="' + this.icons.error + '"></i></div>' : '') + '\
   <div class="rule-filter-container"></div> \
   <div class="rule-operator-container"></div> \
   <div class="rule-value-container"></div> \
-</li>';
+  <div class="rule-description-container"></div>';
 
     return this.change('getRuleTemplate', h);
 };
@@ -1622,21 +1682,21 @@ QueryBuilder.prototype.getRuleTemplate = function(rule_id) {
 QueryBuilder.prototype.getRuleFilterSelect = function(rule, filters) {
     var optgroup = null;
 
-    var h = '<select class="form-control" name="'+ rule.id +'_filter">';
-    h+= '<option value="-1">'+ this.settings.select_placeholder +'</option>';
+    var h = '<select class="form-control" name="' + rule.id + '_filter">';
+    h += '<option value="-1">' + this.settings.select_placeholder + '</option>';
 
     filters.forEach(function(filter) {
         if (optgroup != filter.optgroup) {
-            if (optgroup !== null) h+= '</optgroup>';
+            if (optgroup !== null) h += '</optgroup>';
             optgroup = filter.optgroup;
-            if (optgroup !== null) h+= '<optgroup label="'+ optgroup +'">';
+            if (optgroup !== null) h += '<optgroup label="' + optgroup + '">';
         }
 
-        h+= '<option value="'+ filter.id +'">'+ filter.label +'</option>';
+        h += '<option value="' + filter.id + '">' + filter.label + '</option>';
     });
 
-    if (optgroup !== null) h+= '</optgroup>';
-    h+= '</select>';
+    if (optgroup !== null) h += '</optgroup>';
+    h += '</select>';
 
     return this.change('getRuleFilterSelect', h, rule);
 };
@@ -1648,14 +1708,14 @@ QueryBuilder.prototype.getRuleFilterSelect = function(rule, filters) {
  * @return {string}
  */
 QueryBuilder.prototype.getRuleOperatorSelect = function(rule, operators) {
-    var h = '<select class="form-control" name="'+ rule.id +'_operator">';
+    var h = '<select class="form-control" name="' + rule.id + '_operator">';
 
-    for (var i=0, l=operators.length; i<l; i++) {
+    for (var i = 0, l = operators.length; i < l; i++) {
         var label = this.lang.operators[operators[i].type] || operators[i].type;
-        h+= '<option value="'+ operators[i].type +'">'+ label +'</option>';
+        h += '<option value="' + operators[i].type + '">' + label + '</option>';
     }
 
-    h+= '</select>';
+    h += '</select>';
 
     return this.change('getRuleOperatorSelect', h, rule);
 };
@@ -1670,70 +1730,86 @@ QueryBuilder.prototype.getRuleOperatorSelect = function(rule, operators) {
 QueryBuilder.prototype.getRuleInput = function(rule, value_id) {
     var filter = rule.filter,
         validation = rule.filter.validation || {},
-        name = rule.id +'_value_'+ value_id,
+        name = rule.id + '_value_' + value_id,
         c = filter.vertical ? ' class=block' : '',
         h = '';
 
     if (typeof filter.input === 'function') {
         h = filter.input.call(this, rule, name);
-    }
-    else {
+    } else {
         switch (filter.input) {
             case 'radio':
                 iterateOptions(filter.values, function(key, val) {
-                    h+= '<label'+ c +'><input type="radio" name="'+ name +'" value="'+ key +'"> '+ val +'</label> ';
+                    h += '<label' + c + '><input type="radio" name="' + name + '" value="' + key + '"> ' + val + '</label> ';
                 });
                 break;
 
             case 'checkbox':
                 iterateOptions(filter.values, function(key, val) {
-                    h+= '<label'+ c +'><input type="checkbox" name="'+ name +'" value="'+ key +'"> '+ val +'</label> ';
+                    h += '<label' + c + '><input type="checkbox" name="' + name + '" value="' + key + '"> ' + val + '</label> ';
                 });
                 break;
 
             case 'select':
-                h+= '<select class="form-control" name="'+ name +'"'+ (filter.multiple ? ' multiple' : '') +'>';
+                h += '<select class="form-control" name="' + name + '"' + (filter.multiple ? ' multiple' : '') + '>';
                 iterateOptions(filter.values, function(key, val) {
-                    h+= '<option value="'+ key +'"> '+ val +'</option> ';
+                    h += '<option value="' + key + '"> ' + val + '</option> ';
                 });
-                h+= '</select>';
+                h += '</select>';
                 break;
 
             case 'textarea':
-                h+= '<textarea class="form-control" name="'+ name +'"';
-                if (filter.size) h+= ' cols="'+ filter.size +'"';
-                if (filter.rows) h+= ' rows="'+ filter.rows +'"';
-                if (validation.min !== undefined) h+= ' minlength="'+ validation.min +'"';
-                if (validation.max !== undefined) h+= ' maxlength="'+ validation.max +'"';
-                if (filter.placeholder) h+= ' placeholder="'+ filter.placeholder +'"';
-                h+= '></textarea>';
+                h += '<textarea class="form-control" name="' + name + '"';
+                if (filter.size) h += ' cols="' + filter.size + '"';
+                if (filter.rows) h += ' rows="' + filter.rows + '"';
+                if (validation.min !== undefined) h += ' minlength="' + validation.min + '"';
+                if (validation.max !== undefined) h += ' maxlength="' + validation.max + '"';
+                if (filter.placeholder) h += ' placeholder="' + filter.placeholder + '"';
+                h += '></textarea>';
                 break;
 
             default:
                 switch (QueryBuilder.types[filter.type]) {
                     case 'number':
-                        h+= '<input class="form-control" type="number" name="'+ name +'"';
-                        if (validation.step !== undefined) h+= ' step="'+ validation.step +'"';
-                        if (validation.min !== undefined) h+= ' min="'+ validation.min +'"';
-                        if (validation.max !== undefined) h+= ' max="'+ validation.max +'"';
-                        if (filter.placeholder) h+= ' placeholder="'+ filter.placeholder +'"';
-                        if (filter.size) h+= ' size="'+ filter.size +'"';
-                        h+= '>';
+                        h += '<input class="form-control" type="number" name="' + name + '"';
+                        if (validation.step !== undefined) h += ' step="' + validation.step + '"';
+                        if (validation.min !== undefined) h += ' min="' + validation.min + '"';
+                        if (validation.max !== undefined) h += ' max="' + validation.max + '"';
+                        if (filter.placeholder) h += ' placeholder="' + filter.placeholder + '"';
+                        if (filter.size) h += ' size="' + filter.size + '"';
+                        h += '>';
                         break;
 
                     default:
-                        h+= '<input class="form-control" type="text" name="'+ name +'"';
-                        if (filter.placeholder) h+= ' placeholder="'+ filter.placeholder +'"';
-                        if (filter.type === 'string' && validation.min !== undefined) h+= ' minlength="'+ validation.min +'"';
-                        if (filter.type === 'string' && validation.max !== undefined) h+= ' maxlength="'+ validation.max +'"';
-                        if (filter.size) h+= ' size="'+ filter.size +'"';
-                        h+= '>';
+                        h += '<input class="form-control" type="text" name="' + name + '"';
+                        if (filter.placeholder) h += ' placeholder="' + filter.placeholder + '"';
+                        if (filter.type === 'string' && validation.min !== undefined) h += ' minlength="' + validation.min + '"';
+                        if (filter.type === 'string' && validation.max !== undefined) h += ' maxlength="' + validation.max + '"';
+                        if (filter.size) h += ' size="' + filter.size + '"';
+                        h += '>';
                 }
         }
     }
 
     return this.change('getRuleInput', h, rule, name);
 };
+
+
+/**
+ * Return the rule description HTML
+ * @param rule {Rule}
+ * @param description_id {string}
+ * @return {string}
+ */
+QueryBuilder.prototype.getRuleDescriptionInput = function(rule) {
+    var h = '',
+        name = rule.id + '_description';
+    h += '<label>Explanation: </label>'
+    h += '<textarea rows="3" cols="80" class="form-control" name="' + name + '"';
+    h += '></textarea>';
+    return this.change('getRuleDescriptionInput', h, rule, name);
+};
+
 
 // Model CLASS
 // ===============================
@@ -2143,6 +2219,7 @@ defineModelProperties(Rule, ['filter', 'operator', 'flags']);
 
 QueryBuilder.Group = Group;
 QueryBuilder.Rule = Rule;
+
 
 /**
  * Utility to iterate over radio/checkbox/selection options.
@@ -3263,12 +3340,12 @@ QueryBuilder.extend({
         // disable some
         $.each(self.status.used_filters, function(filterId, groups) {
             if (groups.length === 0) {
-                self.$el.find('.rule-filter-container option[value=' + filterId + ']:not(:selected)').prop('disabled', true);
+                self.$el.find('.rule-filter-container option[value="' + filterId + '"]:not(:selected)').prop('disabled', true);
             }
             else {
                 groups.forEach(function(group) {
                     group.each(function(rule) {
-                        rule.$el.find('.rule-filter-container option[value=' + filterId + ']:not(:selected)').prop('disabled', true);
+                        rule.$el.find('.rule-filter-container option[value="' + filterId + '"]:not(:selected)').prop('disabled', true);
                     });
                 });
             }

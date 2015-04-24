@@ -398,6 +398,34 @@ QueryBuilder.prototype.setRuleValue = function(rule, value) {
 };
 
 /**
+ * Returns rule description
+ * @param rule {Rule}
+ * @return {string}
+ */
+QueryBuilder.prototype.getRuleDescription = function(rule) {
+    var $description = rule.$el.find('.rule-description-container');
+    var name = rule.id + '_description';
+    var description = $description.find('[name='+ name +']').val();
+    return this.change('getRuleDescription', description, rule);
+};
+
+/**
+ * Sets the description of a rule.
+ * @param rule {Rule}
+ * @param description {string}
+ */
+QueryBuilder.prototype.setRuleDescription = function(rule, description) {
+
+    this.trigger('beforeSetRuleDescription', rule, description);
+
+    var $description = $('.rule-description-container');
+    var name = rule.id +'_description';
+    $description.find('[name='+ name +']').val(description).trigger('change');
+
+    this.trigger('afterSetRuleDescription', rule, description);
+};
+
+/**
  * Clean rule flags.
  * @param rule {object}
  * @return {object}
@@ -420,3 +448,4 @@ QueryBuilder.prototype.parseRuleFlags = function(rule) {
 
     return this.change('parseRuleFlags', flags, rule);
 };
+
