@@ -1804,8 +1804,8 @@ QueryBuilder.prototype.getRuleInput = function(rule, value_id) {
 QueryBuilder.prototype.getRuleDescriptionInput = function(rule) {
     var h = '',
         name = rule.id + '_description';
-    h += '<label>Explanation: </label>'
-    h += '<textarea rows="3" cols="80" class="form-control" name="' + name + '"';
+    // h += '<label>Explanation: </label>'
+    h += '<textarea rows="3" placeholder="Explanation Here!" cols="80" class="form-control" name="' + name + '"';
     h += '></textarea>';
     return this.change('getRuleDescriptionInput', h, rule, name);
 };

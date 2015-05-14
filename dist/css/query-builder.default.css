@@ -49,7 +49,6 @@
 }
 .query-builder .rule-container .rule-description-container {
   border-left: 1px solid #ddd;
-  padding-left: 50px;
 }
 .query-builder .rule-container .rule-description-container label {
   margin-bottom: 0;
